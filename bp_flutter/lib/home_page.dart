@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,7 +21,10 @@ class _HomePageState extends State<HomePage> {
           return _singleTile();
         }, itemCount: 15,),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: (){}, child: Icon(Icons.add),),
+      floatingActionButton: FloatingActionButton(onPressed: () async {
+         const platform = const MethodChannel('myChannel');
+         await platform.invokeMethod("ar");
+      }, child: Icon(Icons.add),),
     );
   }
 
