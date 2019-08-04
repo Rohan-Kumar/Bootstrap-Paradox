@@ -21,6 +21,9 @@ public class MainActivity extends FlutterActivity {
                 (call, result) -> {
                     Log.d("TAG", "onCreate: ");
                     if (call.method.equals("ar")) {
+                        startActivity(new Intent(MainActivity.this, BroadcasterActivity.class));
+                    }
+                    if (call.method.equals("au")) {
                         startActivity(new Intent(MainActivity.this, AudienceActivity.class));
                     }
                 });

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,6 +11,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
 
+  List<String> rooms = [
+    'Boolywood panga',
+    'Kannada ',
+    'Tamil Rockers',
+    'Mumbaikars '
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +26,8 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         child: ListView.builder(itemBuilder: (context, n){
-          return _singleTile();
-        }, itemCount: 15,),
+          return _singleTile(rooms[n]);
+        }, itemCount: rooms.length,),
       ),
       floatingActionButton: FloatingActionButton(onPressed: () async {
          const platform = const MethodChannel('myChannel');
@@ -28,15 +36,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _singleTile() {
-    return ListTile(
-      title: Text('Title'),
-      subtitle: Text('Language selected'),
-      trailing: Column(
-        children: <Widget>[
-          Icon(Icons.supervised_user_circle),
-          Text('23'),
-        ],
+  Widget _singleTile(String room) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Material(
+        elevation: 4,
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+        type: MaterialType.card,
+        child: ListTile(
+          onTap: () async {
+            const platform = const MethodChannel('myChannel');
+            await platform.invokeMethod("au");
+          },
+          title: Text(room, style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),),
+          subtitle: Text(room.split(" ")[0].toUpperCase()),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(Icons.supervised_user_circle),
+              Text('${Random().nextInt(50)+1}'),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -12,13 +12,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Time Left:"
+        android:text="Time Left: 10:00"
         android:id="@+id/time_left"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="movie name"
+        android:text="Dhoom"
+        android:textSize="24sp"
         android:gravity="center"
         android:id="@+id/movie_name"/>
 
@@ -44,12 +45,14 @@
                     android:layout_height="60dp"
                     android:text="New Button1"
                     android:onClick="ImageButtonClicked"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/tree"
 
                     android:id="@+id/button1" />
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/car"
                     android:onClick="ImageButtonClicked"
                     android:layout_marginLeft="5dp"
@@ -58,38 +61,44 @@
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/haya"
+                    android:src="@drawable/bike"
+                    android:scaleType="centerCrop"
                     android:onClick="ImageButtonClicked"
                     android:layout_marginLeft="5dp"
                     android:id="@+id/button3" />
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/tree"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/fan"
                     android:layout_marginLeft="5dp"
                     android:id="@+id/button4" />
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/tree"
+                    android:src="@drawable/king"
+                    android:scaleType="centerCrop"
                     android:layout_marginLeft="5dp"
                     android:id="@+id/button5" />
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/tree"
+                    android:src="@drawable/doll"
+                    android:scaleType="centerCrop"
                     android:layout_marginLeft="5dp"
                     android:id="@+id/button6" />
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/tree"
+                    android:src="@drawable/plus"
+                    android:scaleType="centerCrop"
                     android:layout_marginLeft="5dp"
                     android:id="@+id/button7" />
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/tree"
+                    android:src="@drawable/tom"
+                    android:scaleType="centerCrop"
                     android:layout_marginLeft="5dp"
                     android:id="@+id/button8"/>
             </LinearLayout>

@@ -30,9 +30,12 @@
         android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="bp_flutter">
-        <activity android:name=".AudienceActivity"></activity>
         <activity
-            android:name=".Main2Activity"
+            android:name=".AudienceActivity"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".BroadcasterActivity"
             android:label="@string/title_activity_main2"
             android:theme="@style/AppTheme.NoActionBar" />
 
