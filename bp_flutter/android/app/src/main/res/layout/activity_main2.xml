@@ -8,10 +8,7 @@
         android:name="com.google.ar.sceneform.ux.ArFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <FrameLayout
-        android:id="@+id/videoFragment"
-        android:layout_width="200dp"
-        android:layout_height="200dp" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -99,11 +96,4 @@
 
         </HorizontalScrollView>
     </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/videoFragment2"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginLeft="200dp"/>
-
 </FrameLayout>

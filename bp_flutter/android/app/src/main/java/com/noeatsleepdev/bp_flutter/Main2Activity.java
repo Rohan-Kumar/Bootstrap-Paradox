@@ -18,13 +18,29 @@ package com.noeatsleepdev.bp_flutter;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.hardware.display.DisplayManager;
+import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
+import android.media.MediaFormat;
+import android.media.MediaMuxer;
+import android.media.MediaRecorder;
+import android.media.MediaRecorder.VideoSource;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -44,9 +60,19 @@ import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Date;
+
+import android.media.MediaRecorder;
+
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
+import io.agora.rtc.mediaio.IVideoFrameConsumer;
+import io.agora.rtc.mediaio.IVideoSource;
+import io.agora.rtc.mediaio.MediaIO;
+import io.agora.rtc.video.AgoraVideoFrame;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 
@@ -54,6 +80,9 @@ public class Main2Activity extends AppCompatActivity {
     private static final String TAG = Main2Activity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
     private static final String LOG_TAG = "agora tag";
+
+    private MediaProjectionManager mediaProjectionManager;
+    private static final int REQUEST_CODE_CAPTURE_PERM = 1234;
 
     private ArFragment arFragment;
     private ModelRenderable andyRenderable;
@@ -65,9 +94,9 @@ public class Main2Activity extends AppCompatActivity {
         public void onJoinChannelSuccess(String channel, int uid1, int elapsed) {
             runOnUiThread(() -> {
                 Log.d(TAG, "Join channel success" + uid1 + " " + uid);
-                if (uid1 == uid) {
-                    setupLocalVideo();
-                }
+
+                startRecording();
+
             });
         }
 
@@ -78,12 +107,9 @@ public class Main2Activity extends AppCompatActivity {
                 Log.d(TAG, "Join channel success" + uid1 + " " + uid);
                 if (uid1 != uid) {
                     Log.d(TAG, "onUserJoined: " + uid);
-                    setupRemoteVideo(uid1);
                 }
             });
         }
-
-
 
 
         @Override
@@ -92,7 +118,6 @@ public class Main2Activity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Log.d(TAG, "First remote video decoded");
-                    setupRemoteVideo(uid);
                 }
             });
         }
@@ -121,6 +146,12 @@ public class Main2Activity extends AppCompatActivity {
         Log.d(TAG, "onCreate: called");
         setContentView(R.layout.activity_main2);
         Log.d(TAG, "onCreate: success");
+
+
+        mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
+        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_CAPTURE_PERM);
+
+
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
 
         ViewRenderable.builder()
@@ -163,43 +194,59 @@ public class Main2Activity extends AppCompatActivity {
                             .setView(this, R.layout.view_renderable)
                             .build()
                             .thenAccept(viewRenderable -> {
-                               vRenderable=  viewRenderable;
+                                vRenderable = viewRenderable;
                             });
                     imgView.setRenderable(vRenderable);
-                    ViewRenderable rend = (ViewRenderable)imgView.getRenderable();
+                    ViewRenderable rend = (ViewRenderable) imgView.getRenderable();
 
                     ImageView imageView = (ImageView) rend.getView();
                     imageView.setImageResource(item);
 
 
                     imgView.setParent(andy);
-                    imgView.setLocalScale(new Vector3(0.3f,0.3f,0.3f));
+                    imgView.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
                     andy.select();
                 });
 
         initializeAgoraEngine();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (REQUEST_CODE_CAPTURE_PERM == requestCode) {
+            if (resultCode == RESULT_OK) {
+                mMediaProjection = mediaProjectionManager.getMediaProjection(resultCode, intent);
+                Log.d(TAG, "done");
+//                startRecording(); // defined below
+            } else {
+                Log.d(TAG, "error");
+                // user did not grant permissions
+            }
+        }
+    }
 
-   private int item = 0;
-    public void ImageButtonClicked(View view){
-       // ImageView imageView = (ImageView)findViewById(R.id.planetInfoCard);
+
+    private int item = 0;
+
+    public void ImageButtonClicked(View view) {
+        // ImageView imageView = (ImageView)findViewById(R.id.planetInfoCard);
         switch (view.getId()) {
             case R.id.button2:
                 item = R.drawable.car;
-           //     imageView.setBackgroundResource(R.drawable.car);
+                //     imageView.setBackgroundResource(R.drawable.car);
                 break;
             case R.id.button3:
                 item = R.drawable.haya;
-             //   imageView.setBackgroundResource(R.drawable.haya);
+                //   imageView.setBackgroundResource(R.drawable.haya);
                 break;
             case R.id.button1:
                 item = R.drawable.tree;
-             //   imageView.setBackgroundResource(R.drawable.tree);
+                //   imageView.setBackgroundResource(R.drawable.tree);
                 break;
         }
 
     }
+
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
         String openGlVersionString =
                 ((ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE))
@@ -235,7 +282,52 @@ public class Main2Activity extends AppCompatActivity {
         setVideoProfile();
         mRtcEngine.enableVideo();
 
+//        mRtcEngine.setExternalVideoSource(
+//                true,
+//                false,
+//                true
+//        );
+        setVideoSource();
+
         delayTest();
+
+    }
+
+    IVideoFrameConsumer mConsumer;
+    boolean mHasStarted;
+
+    private void setVideoSource() {
+
+        IVideoSource source = new IVideoSource() {
+            @Override
+            public boolean onInitialize(IVideoFrameConsumer consumer) {
+                mConsumer = consumer;
+                return true;
+            }
+
+            @Override
+            public boolean onStart() {
+                mHasStarted = true;
+                return true;
+            }
+
+            @Override
+            public void onStop() {
+                mHasStarted = false;
+            }
+
+            @Override
+            public void onDispose() {
+                mConsumer = null;
+            }
+
+            @Override
+            public int getBufferType() {
+                return MediaIO.BufferType.BYTE_ARRAY.intValue();
+            }
+        };
+
+        mRtcEngine.setVideoSource(source);
 
     }
 
@@ -247,7 +339,6 @@ public class Main2Activity extends AppCompatActivity {
             public void run() {
                 Log.d(TAG, "run: start join channel");
                 joinchannel(token, "demoChannel1", uid);
-
             }
         }, 5000);
 
@@ -267,31 +358,13 @@ public class Main2Activity extends AppCompatActivity {
 
         VideoEncoderConfiguration videoEncoderConfiguration = new VideoEncoderConfiguration(dimensions, VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_24, VideoEncoderConfiguration.STANDARD_BITRATE, orientationMode);
 
-        mRtcEngine.setVideoEncoderConfiguration(videoEncoderConfiguration);
+//        mRtcEngine.setVideoEncoderConfiguration(videoEncoderConfiguration);
+        mRtcEngine.setVideoEncoderConfiguration(new VideoEncoderConfiguration(VideoEncoderConfiguration.VD_640x480,
+                VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_30,
+                VideoEncoderConfiguration.STANDARD_BITRATE,
+                VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE));
     }
 
-    private void setupLocalVideo() {
-        FrameLayout container = (FrameLayout) findViewById(R.id.videoFragment);
-        SurfaceView surfaceView = RtcEngine.CreateRendererView(getBaseContext());
-        surfaceView.setZOrderMediaOverlay(true);
-        container.addView(surfaceView);
-        mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_ADAPTIVE, uid));
-    }
-
-    private void setupRemoteVideo(int uid) {
-        Log.d(TAG, "setupRemoteVideo: ");
-        FrameLayout container = (FrameLayout) findViewById(R.id.videoFragment2);
-
-        if (container.getChildCount() >= 1) {
-            return;
-        }
-
-        SurfaceView surfaceView = RtcEngine.CreateRendererView(getBaseContext());
-        container.addView(surfaceView);
-        mRtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_ADAPTIVE, uid));
-
-        surfaceView.setTag(uid);
-    }
 
     @Override
     protected void onDestroy() {
@@ -310,4 +383,182 @@ public class Main2Activity extends AppCompatActivity {
     private void leaveChannel() {
         mRtcEngine.leaveChannel();
     }
+
+    private boolean mMuxerStarted = false;
+    private MediaProjection mMediaProjection;
+    private Surface mInputSurface;
+    private MediaMuxer mMuxer;
+    private MediaCodec mVideoEncoder;
+    private MediaCodec.BufferInfo mVideoBufferInfo;
+    private int mTrackIndex = -1;
+
+    private final Handler mDrainHandler = new Handler(Looper.getMainLooper());
+    private Runnable mDrainEncoderRunnable = new Runnable() {
+        @Override
+        public void run() {
+            drainEncoder();
+        }
+    };
+
+    private void pushVideo(byte[] data) {
+        Log.d(TAG, "pushVideo: called");
+
+//        AgoraVideoFrame av = new AgoraVideoFrame();
+//        av.format = AgoraVideoFrame.BUFFER_TYPE_ARRAY;
+//        av.height = Resources.getSystem().getDisplayMetrics().heightPixels;
+//        av.buf = data;
+//        mRtcEngine.pushExternalVideoFrame(av);
+
+        setVideoSource();
+        if (mHasStarted && mConsumer != null) {
+            mConsumer.consumeByteArrayFrame(data, MediaIO.PixelFormat.RGBA.intValue(), 300, 500, 0, new Date().getTime());
+        }
+    }
+
+
+    private void startRecording() {
+        DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        Display defaultDisplay = dm.getDisplay(Display.DEFAULT_DISPLAY);
+        if (defaultDisplay == null) {
+            throw new RuntimeException("No display found.");
+        }
+        prepareVideoEncoder();
+
+        try {
+            mMuxer = new MediaMuxer(Environment.getExternalStorageDirectory().toString() + "/video.mp4", MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+        } catch (IOException ioe) {
+            throw new RuntimeException("MediaMuxer creation failed", ioe);
+        }
+
+        // Get the display size and density.
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
+        int screenDensity = metrics.densityDpi;
+
+        // Start the video input.
+        mMediaProjection.createVirtualDisplay("Recording Display", screenWidth,
+                screenHeight, screenDensity, 0 /* flags */, mInputSurface,
+                null /* callback */, null /* handler */);
+
+        // Start the encoders
+        drainEncoder();
+    }
+
+
+    private static final String VIDEO_MIME_TYPE = "video/avc";
+    private static final int VIDEO_WIDTH = Resources.getSystem().getDisplayMetrics().widthPixels;
+    private static final int VIDEO_HEIGHT = Resources.getSystem().getDisplayMetrics().heightPixels;
+
+    private void prepareVideoEncoder() {
+        mVideoBufferInfo = new MediaCodec.BufferInfo();
+        MediaFormat format = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, VIDEO_WIDTH, VIDEO_HEIGHT);
+        int frameRate = 30; // 30 fps
+
+        // Set some required properties. The media codec may fail if these aren't defined.
+        format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+        format.setInteger(MediaFormat.KEY_BIT_RATE, 6000000); // 6Mbps
+        format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
+        format.setInteger(MediaFormat.KEY_CAPTURE_RATE, frameRate);
+        format.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000000 / frameRate);
+        format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
+        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1); // 1 seconds between I-frames
+
+        // Create a MediaCodec encoder and configure it. Get a Surface we can use for recording into.
+        try {
+            mVideoEncoder = MediaCodec.createEncoderByType(VIDEO_MIME_TYPE);
+            mVideoEncoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            mInputSurface = mVideoEncoder.createInputSurface();
+            mVideoEncoder.start();
+        } catch (IOException e) {
+            releaseEncoders();
+        }
+    }
+
+    private boolean drainEncoder() {
+        mDrainHandler.removeCallbacks(mDrainEncoderRunnable);
+        while (true) {
+            int bufferIndex = mVideoEncoder.dequeueOutputBuffer(mVideoBufferInfo, 0);
+
+            if (bufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                // nothing available yet
+                break;
+            } else if (bufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                // should happen before receiving buffers, and should only happen once
+                if (mTrackIndex >= 0) {
+                    throw new RuntimeException("format changed twice");
+                }
+//                mTrackIndex = mMuxer.addTrack(mVideoEncoder.getOutputFormat());
+//                if (!mMuxerStarted && mTrackIndex >= 0) {
+//                    mMuxer.start();
+//                    mMuxerStarted = true;
+//                }
+            } else if (bufferIndex < 0) {
+                // not sure what's going on, ignore it
+            } else {
+                ByteBuffer encodedData = mVideoEncoder.getOutputBuffer(bufferIndex);
+                if (encodedData == null) {
+                    throw new RuntimeException("couldn't fetch buffer at index " + bufferIndex);
+                }
+
+                if ((mVideoBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+                    mVideoBufferInfo.size = 0;
+                }
+
+                if (mVideoBufferInfo.size != 0) {
+//                    if (mMuxerStarted) {
+                    encodedData.position(mVideoBufferInfo.offset);
+                    encodedData.limit(mVideoBufferInfo.offset + mVideoBufferInfo.size);
+//                        mMuxer.writeSampleData(mTrackIndex, encodedData, mVideoBufferInfo);
+                    Log.d(TAG, String.valueOf(encodedData));
+                    byte[] arr = new byte[encodedData.remaining()];
+                    encodedData.get(arr);
+                    pushVideo(arr);
+//                        Log.d(TAG, String.valueOf(encodedData.array()));
+//                    } else {
+//                         muxer not started
+//                    }
+                }
+
+                mVideoEncoder.releaseOutputBuffer(bufferIndex, false);
+
+                if ((mVideoBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                    break;
+                }
+            }
+        }
+
+        mDrainHandler.postDelayed(mDrainEncoderRunnable, 10);
+        return false;
+    }
+
+    private void releaseEncoders() {
+        mDrainHandler.removeCallbacks(mDrainEncoderRunnable);
+        if (mMuxer != null) {
+            if (mMuxerStarted) {
+                mMuxer.stop();
+            }
+            mMuxer.release();
+            mMuxer = null;
+            mMuxerStarted = false;
+        }
+        if (mVideoEncoder != null) {
+            mVideoEncoder.stop();
+            mVideoEncoder.release();
+            mVideoEncoder = null;
+        }
+        if (mInputSurface != null) {
+            mInputSurface.release();
+            mInputSurface = null;
+        }
+        if (mMediaProjection != null) {
+            mMediaProjection.stop();
+            mMediaProjection = null;
+        }
+        mVideoBufferInfo = null;
+        mDrainEncoderRunnable = null;
+        mTrackIndex = -1;
+    }
+
 }
