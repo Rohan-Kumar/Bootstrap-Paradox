@@ -5,8 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -119,6 +121,15 @@ public class AudienceActivity extends AppCompatActivity {
 
         RtcEngine.destroy();
         mRtcEngine = null;
+    }
+
+
+    public void correct(View view) {
+        Toast.makeText(this, "Yayyy!!! You won!!!", Toast.LENGTH_SHORT).show();
+    }
+
+    public void wrong(View view) {
+        Toast.makeText(this, "OOPS!! It's the wrong answer", Toast.LENGTH_SHORT).show();
     }
 
 

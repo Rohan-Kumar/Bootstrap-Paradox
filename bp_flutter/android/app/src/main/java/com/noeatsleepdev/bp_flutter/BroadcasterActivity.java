@@ -160,6 +160,8 @@ public class BroadcasterActivity extends AppCompatActivity {
         mSSInstance = ScreenShare.getInstance();
         mSSInstance.setListener(mListener);
 
+        Toast.makeText(this, "Your Movie is DHOOM! All the best!!", Toast.LENGTH_SHORT).show();
+
 //        mediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
 //        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE_CAPTURE_PERM);
 
@@ -291,7 +293,7 @@ public class BroadcasterActivity extends AppCompatActivity {
 
     private void setupVideoProfile() {
         mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
-        mRtcEngine.enableVideo();
+//        mRtcEngine.enableVideo();
         mVEC = new VideoEncoderConfiguration(new VideoEncoderConfiguration.VideoDimensions(200, 300),
                 VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_1,
                 VideoEncoderConfiguration.STANDARD_BITRATE,
@@ -356,6 +358,7 @@ public class BroadcasterActivity extends AppCompatActivity {
         }
         return true;
     }
+
 
     /*private void setupLocalVideo() {
         SurfaceView camV = RtcEngine.CreateRendererView(getApplicationContext());

@@ -10,19 +10,18 @@
         android:layout_height="match_parent" />
 
     <TextView
+        android:id="@+id/time_left"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Time Left: 10:00"
-        android:id="@+id/time_left"/>
+        android:text="Time Left: 10:00" />
 
     <TextView
+        android:id="@+id/movie_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Dhoom"
-        android:textSize="24sp"
         android:gravity="center"
-        android:id="@+id/movie_name"/>
-
+        android:text="Dhoom"
+        android:textSize="24sp" />
 
 
     <LinearLayout
@@ -30,77 +29,85 @@
         android:layout_height="match_parent"
         android:layout_marginTop="25dp"
         android:gravity="bottom">
+
         <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:id="@+id/horizontalScrollView">
+            android:layout_height="60dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
                 android:orientation="horizontal">
+
                 <ImageButton
+                    android:id="@+id/button1"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:text="New Button1"
                     android:onClick="ImageButtonClicked"
                     android:scaleType="centerCrop"
                     android:src="@drawable/tree"
 
-                    android:id="@+id/button1" />
-                <ImageButton
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/car"
-                    android:onClick="ImageButtonClicked"
-                    android:layout_marginLeft="5dp"
-                    android:id="@+id/button2" />
+                    android:text="New Button1" />
 
                 <ImageButton
+                    android:id="@+id/button2"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/bike"
-                    android:scaleType="centerCrop"
+                    android:layout_marginLeft="5dp"
                     android:onClick="ImageButtonClicked"
-                    android:layout_marginLeft="5dp"
-                    android:id="@+id/button3" />
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/car" />
+
                 <ImageButton
+                    android:id="@+id/button3"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/fan"
                     android:layout_marginLeft="5dp"
-                    android:id="@+id/button4" />
+                    android:onClick="ImageButtonClicked"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bike" />
+
                 <ImageButton
+                    android:id="@+id/button4"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/king"
-                    android:scaleType="centerCrop"
                     android:layout_marginLeft="5dp"
-                    android:id="@+id/button5" />
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/fan" />
+
                 <ImageButton
+                    android:id="@+id/button5"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/doll"
-                    android:scaleType="centerCrop"
                     android:layout_marginLeft="5dp"
-                    android:id="@+id/button6" />
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/king" />
+
                 <ImageButton
+                    android:id="@+id/button6"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/plus"
-                    android:scaleType="centerCrop"
                     android:layout_marginLeft="5dp"
-                    android:id="@+id/button7" />
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/doll" />
+
                 <ImageButton
+                    android:id="@+id/button7"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/tom"
-                    android:scaleType="centerCrop"
                     android:layout_marginLeft="5dp"
-                    android:id="@+id/button8"/>
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/plus" />
+
+                <ImageButton
+                    android:id="@+id/button8"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/tom" />
             </LinearLayout>
 
         </HorizontalScrollView>
