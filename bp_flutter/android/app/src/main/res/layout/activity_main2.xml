@@ -12,6 +12,94 @@
         android:id="@+id/videoFragment"
         android:layout_width="200dp"
         android:layout_height="200dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Time Left:"
+        android:id="@+id/time_left"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="movie name"
+        android:gravity="center"
+        android:id="@+id/movie_name"/>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="25dp"
+        android:gravity="bottom">
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:id="@+id/horizontalScrollView">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:orientation="horizontal">
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:text="New Button1"
+                    android:onClick="ImageButtonClicked"
+                    android:src="@drawable/tree"
+
+                    android:id="@+id/button1" />
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/car"
+                    android:onClick="ImageButtonClicked"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/button2" />
+
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/haya"
+                    android:onClick="ImageButtonClicked"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/button3" />
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/tree"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/button4" />
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/tree"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/button5" />
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/tree"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/button6" />
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/tree"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/button7" />
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/tree"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/button8"/>
+            </LinearLayout>
+
+        </HorizontalScrollView>
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/videoFragment2"
         android:layout_width="200dp"

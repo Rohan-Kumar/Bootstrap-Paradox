@@ -28,13 +28,19 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.Renderable;
+import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
@@ -51,6 +57,7 @@ public class Main2Activity extends AppCompatActivity {
 
     private ArFragment arFragment;
     private ModelRenderable andyRenderable;
+    private ViewRenderable vRenderable;
     RtcEngine mRtcEngine;
 
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
@@ -75,6 +82,9 @@ public class Main2Activity extends AppCompatActivity {
                 }
             });
         }
+
+
+
 
         @Override
         public void onFirstRemoteVideoDecoded(final int uid, int width, int height, int elapsed) {
@@ -113,6 +123,11 @@ public class Main2Activity extends AppCompatActivity {
         Log.d(TAG, "onCreate: success");
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
 
+        ViewRenderable.builder()
+                .setView(this, R.layout.view_renderable)
+                .build()
+                .thenAccept(renderable -> vRenderable = renderable);
+
         ModelRenderable.builder()
                 .setSource(this, Uri.parse("andy.sfb"))
                 .build()
@@ -141,12 +156,50 @@ public class Main2Activity extends AppCompatActivity {
                     TransformableNode andy = new TransformableNode(arFragment.getTransformationSystem());
                     andy.setParent(anchorNode);
                     andy.setRenderable(andyRenderable);
+
+                    Node imgView = new Node();
+
+                    ViewRenderable.builder()
+                            .setView(this, R.layout.view_renderable)
+                            .build()
+                            .thenAccept(viewRenderable -> {
+                               vRenderable=  viewRenderable;
+                            });
+                    imgView.setRenderable(vRenderable);
+                    ViewRenderable rend = (ViewRenderable)imgView.getRenderable();
+
+                    ImageView imageView = (ImageView) rend.getView();
+                    imageView.setImageResource(item);
+
+
+                    imgView.setParent(andy);
+                    imgView.setLocalScale(new Vector3(0.3f,0.3f,0.3f));
                     andy.select();
                 });
 
         initializeAgoraEngine();
     }
 
+
+   private int item = 0;
+    public void ImageButtonClicked(View view){
+       // ImageView imageView = (ImageView)findViewById(R.id.planetInfoCard);
+        switch (view.getId()) {
+            case R.id.button2:
+                item = R.drawable.car;
+           //     imageView.setBackgroundResource(R.drawable.car);
+                break;
+            case R.id.button3:
+                item = R.drawable.haya;
+             //   imageView.setBackgroundResource(R.drawable.haya);
+                break;
+            case R.id.button1:
+                item = R.drawable.tree;
+             //   imageView.setBackgroundResource(R.drawable.tree);
+                break;
+        }
+
+    }
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
         String openGlVersionString =
                 ((ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE))
