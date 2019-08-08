@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AudienceActivity">
+    
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/audience"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/dhoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_margin="15px"
+            android:onClick="correct"
+            android:text="Dhoom" />
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/humTum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="15px"
+            android:onClick="wrong"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:text="Hum Tum" />
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/heraPheri"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="15px"
+            android:layout_height="wrap_content"
+            android:onClick="wrong"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:text="Hera Pheri" />
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
